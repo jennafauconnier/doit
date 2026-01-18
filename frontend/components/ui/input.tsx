@@ -40,7 +40,7 @@ const inputContainerVariants = tv({
 });
 
 const inputVariants = tv({
-  base: "flex-1 text-typography-900 px-4",
+  base: "flex-1 text-gray-900 px-4 py-2",
   variants: {
     size: {
       sm: "text-sm",
@@ -156,6 +156,8 @@ export const Input = forwardRef<TextInput, InputProps>(
               onBlur={handleBlur}
               secureTextEntry={isSecure}
               placeholderTextColor="#a3a3a3"
+              textContentType="none"
+              autoCorrect={false}
               className={inputVariants({ size })}
               {...props}
             />

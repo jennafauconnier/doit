@@ -12,6 +12,8 @@ import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Input, Typography, IconButton, Logo } from "@/components/ui";
+import { authService } from "@/services/api/auth.service";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function SignupScreen() {
   const [username, setUsername] = useState("");
@@ -40,10 +42,22 @@ export default function SignupScreen() {
     setIsLoading(true);
     setError("");
 
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await authService.signup({
+        username,
+        email,
+        password,
+      });
+
+      useAuthStore.getState().setAuth(response.user, response.token);
       router.replace("/(tabs)");
-    }, 1500);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erreur lors de l'inscription"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

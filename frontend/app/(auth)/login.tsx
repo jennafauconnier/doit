@@ -5,6 +5,7 @@ import {
   Platform,
   ScrollView,
   Pressable,
+  Alert,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,6 +13,8 @@ import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Input, Logo, Typography } from "@/components/ui";
+import { authService } from "@/services/api/auth.service";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -28,10 +31,15 @@ export default function LoginScreen() {
     setIsLoading(true);
     setError("");
 
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await authService.login({ email, password });
+      await useAuthStore.getState().setAuth(response.user, response.token);
       router.replace("/(tabs)");
-    }, 1500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur de connexion");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

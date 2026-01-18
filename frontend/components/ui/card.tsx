@@ -2,12 +2,12 @@ import { View, type ViewProps } from "react-native";
 import { tv, type VariantProps } from "tailwind-variants";
 
 const cardVariants = tv({
-  base: "bg-background-0 overflow-hidden",
+  base: "bg-white overflow-hidden",
   variants: {
     variant: {
-      elevated: "shadow-soft-2",
-      outlined: "border border-outline-100",
-      filled: "bg-background-50",
+      elevated: "shadow-md",
+      outlined: "border border-gray-200",
+      filled: "bg-gray-50",
     },
     rounded: {
       sm: "rounded-lg",
