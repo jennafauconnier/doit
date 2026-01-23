@@ -1,30 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useRouter } from "expo-router";
 
-import { Typography, Card, Button, IconButton, Logo } from "@/components/ui";
+import { Typography, Button, IconButton, Logo } from "@/components/ui";
 import { useAuthStore } from "@/stores/auth.store";
-
-// Mock data pour l'instant
-const mockTasks = [
-  { id: "1", title: "Faire les courses", completed: false },
-  { id: "2", title: "Appeler le médecin", completed: true },
-  { id: "3", title: "Répondre aux emails", completed: false },
-];
+import { useTasksStore } from "@/stores/tasks.store";
+import { TaskItem } from "@/components/tasks/task-item.component";
 
 export default function HomeScreen() {
+  const router = useRouter();
   const user = useAuthStore((state) => state.user);
-  const [tasks, setTasks] = useState(mockTasks);
+  const { tasks, isLoading, fetchTasks, toggleTask, deleteTask } =
+    useTasksStore();
 
-  const toggleTask = (id: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
+  useEffect(() => {
+    fetchTasks().catch(() => {});
+  }, [fetchTasks]);
 
   const pendingTasks = tasks.filter((t) => !t.completed);
   const completedTasks = tasks.filter((t) => t.completed);
@@ -33,7 +27,7 @@ export default function HomeScreen() {
     <View className="flex-1 bg-white">
       <SafeAreaView className="flex-1" edges={["top"]}>
         {/* Header */}
-        <View className="px-6 pt-4 pb-6">
+        <View className="px-6 pt-4 pb-4">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <Typography variant="bodyLarge" className="text-gray-500">
@@ -68,7 +62,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Tasks List */}
-        <ScrollView 
+        <ScrollView
           className="flex-1 px-6"
           showsVerticalScrollIndicator={false}
         >
@@ -85,7 +79,8 @@ export default function HomeScreen() {
                 >
                   <TaskItem
                     task={task}
-                    onToggle={() => toggleTask(task.id)}
+                    onToggle={() => toggleTask(task)}
+                    onDelete={() => deleteTask(task.id)}
                   />
                 </Animated.View>
               ))}
@@ -105,7 +100,8 @@ export default function HomeScreen() {
                 >
                   <TaskItem
                     task={task}
-                    onToggle={() => toggleTask(task.id)}
+                    onToggle={() => toggleTask(task)}
+                    onDelete={() => deleteTask(task.id)}
                   />
                 </Animated.View>
               ))}
@@ -113,7 +109,7 @@ export default function HomeScreen() {
           )}
 
           {/* Empty State */}
-          {tasks.length === 0 && (
+          {!isLoading && tasks.length === 0 && (
             <View className="items-center justify-center py-20">
               <Ionicons name="checkbox-outline" size={64} color="#e5e7eb" />
               <Typography variant="bodyLarge" className="text-gray-400 mt-4">
@@ -124,10 +120,19 @@ export default function HomeScreen() {
               </Typography>
             </View>
           )}
+
+          {isLoading && tasks.length === 0 && (
+            <View className="items-center justify-center py-20">
+              <Typography variant="bodyLarge" className="text-gray-400">
+                Chargement...
+              </Typography>
+            </View>
+          )}
         </ScrollView>
 
-        {/* FAB - Add Task */}
+        {/* FAB */}
         <Pressable
+          onPress={() => router.push("/modal")}
           className="absolute bottom-6 right-6 w-14 h-14 bg-fuchsia-500 rounded-full items-center justify-center shadow-lg"
           style={{
             shadowColor: "#d946ef",
@@ -141,41 +146,5 @@ export default function HomeScreen() {
         </Pressable>
       </SafeAreaView>
     </View>
-  );
-}
-
-// Task Item Component
-function TaskItem({
-  task,
-  onToggle,
-}: {
-  task: { id: string; title: string; completed: boolean };
-  onToggle: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onToggle}
-      className="flex-row items-center bg-gray-50 rounded-xl p-4 mb-2"
-    >
-      <View
-        className={`w-6 h-6 rounded-full border-2 items-center justify-center mr-3 ${
-          task.completed
-            ? "bg-green-500 border-green-500"
-            : "border-gray-300"
-        }`}
-      >
-        {task.completed && (
-          <Ionicons name="checkmark" size={14} color="#fff" />
-        )}
-      </View>
-      <Typography
-        className={`flex-1 ${
-          task.completed ? "text-gray-400 line-through" : "text-gray-800"
-        }`}
-      >
-        {task.title}
-      </Typography>
-      <Ionicons name="chevron-forward" size={20} color="#d1d5db" />
-    </Pressable>
   );
 }

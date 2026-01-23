@@ -1,29 +1,54 @@
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { useState } from "react";
+import { View } from "react-native";
+import { useRouter } from "expo-router";
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Typography, Input, Button } from "@/components/ui";
+import { useTasksStore } from "@/stores/tasks.store";
 
 export default function ModalScreen() {
+  const router = useRouter();
+  const { createTask, isLoading } = useTasksStore();
+
+  const [title, setTitle] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleCreate = async () => {
+    const value = title.trim();
+    if (!value) return;
+
+    setIsSubmitting(true);
+    try {
+      await createTask(value);
+      setTitle("");
+      router.back();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title">This is a modal</ThemedText>
-      <Link href="/" dismissTo style={styles.link}>
-        <ThemedText type="link">Go to home screen</ThemedText>
-      </Link>
-    </ThemedView>
+    <View className="flex-1 bg-white px-6 pt-10">
+      <Typography variant="h2" className="text-gray-900 mb-4">
+        Nouvelle tâche
+      </Typography>
+
+      <Input
+        label="Titre"
+        placeholder="Ex: Appeler le médecin"
+        value={title}
+        onChangeText={setTitle}
+      />
+
+      <View className="mt-6">
+        <Button
+          fullWidth
+          onPress={handleCreate}
+          isLoading={isSubmitting || isLoading}
+          disabled={isSubmitting || isLoading || !title.trim()}
+        >
+          Ajouter
+        </Button>
+      </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-});
