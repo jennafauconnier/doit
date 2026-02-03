@@ -13,9 +13,14 @@ export async function apiClient<T>(
   const { auth = true, ...fetchOptions } = options;
 
   const headers: HeadersInit = {
-    "Content-Type": "application/json",
     ...fetchOptions.headers,
   };
+
+  // Ne pas définir Content-Type pour FormData, le navigateur le fera automatiquement
+  const isFormData = fetchOptions.body instanceof FormData;
+  if (!isFormData) {
+    (headers as Record<string, string>)["Content-Type"] = "application/json";
+  }
 
   if (auth) {
     const token = useAuthStore.getState().token;

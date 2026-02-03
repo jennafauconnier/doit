@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 
-import { Typography, Button, IconButton, Logo } from "@/components/ui";
+import { Typography, Logo } from "@/components/ui";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTasksStore } from "@/stores/tasks.store";
 import { TaskItem } from "@/components/tasks/task-item.component";
@@ -20,8 +20,8 @@ export default function HomeScreen() {
     fetchTasks().catch(() => {});
   }, [fetchTasks]);
 
-  const pendingTasks = tasks.filter((t) => !t.completed);
-  const completedTasks = tasks.filter((t) => t.completed);
+  const pendingTasks = tasks.filter((t) => !t.validatedAt);
+  const completedTasks = tasks.filter((t) => !!t.validatedAt);
 
   return (
     <View className="flex-1 bg-white">
@@ -55,7 +55,7 @@ export default function HomeScreen() {
                 {completedTasks.length}
               </Typography>
               <Typography variant="caption" className="text-green-600/70">
-                Terminées
+                Validées
               </Typography>
             </View>
           </View>
@@ -81,6 +81,7 @@ export default function HomeScreen() {
                     task={task}
                     onToggle={() => toggleTask(task)}
                     onDelete={() => deleteTask(task.id)}
+                    onValidate={() => router.push(`/validate/${task.id}`)}
                   />
                 </Animated.View>
               ))}
@@ -91,7 +92,7 @@ export default function HomeScreen() {
           {completedTasks.length > 0 && (
             <View className="mb-6">
               <Typography variant="label" className="text-gray-400 mb-3">
-                TERMINÉES
+                VALIDÉES
               </Typography>
               {completedTasks.map((task, index) => (
                 <Animated.View
@@ -102,6 +103,7 @@ export default function HomeScreen() {
                     task={task}
                     onToggle={() => toggleTask(task)}
                     onDelete={() => deleteTask(task.id)}
+                    onValidate={() => {}}
                   />
                 </Animated.View>
               ))}

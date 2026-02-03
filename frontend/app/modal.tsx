@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { View, Pressable, KeyboardAvoidingView, Platform } from "react-native";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
 import { Typography, Input, Button } from "@/components/ui";
 import { useTasksStore } from "@/stores/tasks.store";
@@ -26,29 +28,51 @@ export default function ModalScreen() {
     }
   };
 
+  const handleClose = () => {
+    router.back();
+  };
+
   return (
-    <View className="flex-1 bg-white px-6 pt-10">
-      <Typography variant="h2" className="text-gray-900 mb-4">
-        Nouvelle tâche
-      </Typography>
+    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-6 py-4">
+          <Typography variant="h2" className="text-gray-900">
+            Nouvelle tâche
+          </Typography>
+          <Pressable
+            onPress={handleClose}
+            className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+          >
+            <Ionicons name="close" size={24} color="#6b7280" />
+          </Pressable>
+        </View>
 
-      <Input
-        label="Titre"
-        placeholder="Ex: Appeler le médecin"
-        value={title}
-        onChangeText={setTitle}
-      />
+        {/* Form */}
+        <View className="flex-1 px-6">
+          <Input
+            label="Titre"
+            placeholder="Ex: Appeler le médecin"
+            value={title}
+            onChangeText={setTitle}
+            autoFocus
+          />
 
-      <View className="mt-6">
-        <Button
-          fullWidth
-          onPress={handleCreate}
-          isLoading={isSubmitting || isLoading}
-          disabled={isSubmitting || isLoading || !title.trim()}
-        >
-          Ajouter
-        </Button>
-      </View>
-    </View>
+          <View className="mt-6">
+            <Button
+              fullWidth
+              onPress={handleCreate}
+              isLoading={isSubmitting || isLoading}
+              disabled={isSubmitting || isLoading || !title.trim()}
+            >
+              Ajouter
+            </Button>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
