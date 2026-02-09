@@ -5,7 +5,6 @@ import {
   Platform,
   ScrollView,
   Pressable,
-  StyleSheet,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,6 +15,9 @@ import { Button, Input, Typography, Logo } from "@/components/ui";
 import { IconButton } from "react-native-paper";
 import { authService } from "@/services/api/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
+
+import { layout } from "@/styles";
+import { styles } from "./signup.styles";
 
 export default function SignupScreen() {
   const [username, setUsername] = useState("");
@@ -64,7 +66,7 @@ export default function SignupScreen() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.flex} edges={["top", "bottom"]}>
+      <SafeAreaView style={layout.flex} edges={["top", "bottom"]}>
         {/* Header Row */}
         <Animated.View
           entering={FadeInUp.delay(50).springify()}
@@ -115,7 +117,6 @@ export default function SignupScreen() {
                   value={username}
                   onChangeText={setUsername}
                   placeholder="johndoe"
-                  autoCapitalize="none"
                   leftIcon="account-outline"
                 />
 
@@ -124,8 +125,6 @@ export default function SignupScreen() {
                   value={email}
                   onChangeText={setEmail}
                   placeholder="votre@email.com"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
                   leftIcon="email-outline"
                 />
 
@@ -191,73 +190,3 @@ export default function SignupScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  flex: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  headerSpacer: {
-    width: 44,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-  },
-  content: {
-    paddingHorizontal: 24,
-  },
-  titleSection: {
-    marginTop: 16,
-    marginBottom: 32,
-  },
-  title: {
-    color: "#111827",
-    marginBottom: 8,
-  },
-  subtitle: {
-    color: "#6B7280",
-  },
-  form: {
-    gap: 16,
-  },
-  errorBox: {
-    backgroundColor: "#FEF2F2",
-    borderWidth: 1,
-    borderColor: "#FECACA",
-    borderRadius: 12,
-    padding: 16,
-  },
-  errorText: {
-    color: "#DC2626",
-  },
-  termsText: {
-    color: "#9CA3AF",
-    textAlign: "center",
-  },
-  linkText: {
-    color: "#2563EB",
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingVertical: 24,
-  },
-  footerText: {
-    color: "#6B7280",
-  },
-  footerLink: {
-    color: "#2563EB",
-    fontWeight: "600",
-  },
-});

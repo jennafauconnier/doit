@@ -4,7 +4,6 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,6 +11,8 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { Typography, Input, Button } from "@/components/ui";
 import { useTasksStore } from "@/stores/tasks.store";
+
+import { styles } from "./modal.styles";
 
 export default function ModalScreen() {
   const router = useRouter();
@@ -44,7 +45,6 @@ export default function ModalScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.flex}
       >
-        {/* Header */}
         <View style={styles.header}>
           <Typography variant="h2" style={styles.title}>
             Nouvelle tâche
@@ -54,7 +54,6 @@ export default function ModalScreen() {
           </Pressable>
         </View>
 
-        {/* Form */}
         <View style={styles.form}>
           <Input
             label="Titre"
@@ -78,38 +77,3 @@ export default function ModalScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  flex: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-  },
-  title: {
-    color: "#111827",
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 20,
-    backgroundColor: "#F3F4F6",
-  },
-  form: {
-    flex: 1,
-    paddingHorizontal: 24,
-  },
-  buttonContainer: {
-    marginTop: 24,
-  },
-});

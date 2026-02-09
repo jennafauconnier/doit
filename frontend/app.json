@@ -50,7 +50,13 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {},
+      "router": {
+        "unstable_settings": {
+          "ignore": [
+            "**/*.styles.ts"
+          ]
+        }
+      },
       "eas": {
         "projectId": "0b0798c6-2499-47cb-a3c4-4fc5d49dca40"
       }

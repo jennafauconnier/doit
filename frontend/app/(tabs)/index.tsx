@@ -10,6 +10,9 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useTasksStore } from "@/stores/tasks.store";
 import { TaskItem } from "@/components/tasks/task-item.component";
 
+import { layout } from "@/styles";
+import { styles } from "./index.styles";
+
 export default function HomeScreen() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
@@ -25,8 +28,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.flex} edges={["top"]}>
-        {/* Header */}
+      <SafeAreaView style={layout.flex} edges={["top"]}>
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <View style={styles.greeting}>
@@ -40,7 +42,6 @@ export default function HomeScreen() {
             <Logo size="sm" />
           </View>
 
-          {/* Stats */}
           <View style={styles.statsRow}>
             <View style={[styles.statCard, styles.statCardPending]}>
               <Typography variant="h2" style={styles.statNumberPending}>
@@ -61,12 +62,10 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Tasks List */}
         <ScrollView
           style={styles.tasksList}
           showsVerticalScrollIndicator={false}
         >
-          {/* Pending Tasks */}
           {pendingTasks.length > 0 && (
             <View style={styles.section}>
               <Typography variant="label" style={styles.sectionTitle}>
@@ -88,7 +87,6 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* Completed Tasks */}
           {completedTasks.length > 0 && (
             <View style={styles.section}>
               <Typography variant="label" style={styles.sectionTitleMuted}>
@@ -110,7 +108,6 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* Empty State */}
           {!isLoading && tasks.length === 0 && (
             <View style={styles.emptyState}>
               <Ionicons name="checkbox-outline" size={64} color="#e5e7eb" />
@@ -132,7 +129,6 @@ export default function HomeScreen() {
           )}
         </ScrollView>
 
-        {/* FAB */}
         <Pressable onPress={() => router.push("/modal")} style={styles.fab}>
           <Ionicons name="add" size={28} color="#fff" />
         </Pressable>
@@ -140,107 +136,3 @@ export default function HomeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  flex: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 16,
-  },
-  headerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  greeting: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  greetingLabel: {
-    color: "#6B7280",
-  },
-  greetingName: {
-    color: "#111827",
-  },
-  statsRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 24,
-  },
-  statCard: {
-    flex: 1,
-    borderRadius: 16,
-    padding: 16,
-  },
-  statCardPending: {
-    backgroundColor: "#FDF4FF",
-  },
-  statCardCompleted: {
-    backgroundColor: "#F0FDF4",
-  },
-  statNumberPending: {
-    color: "#C026D3",
-  },
-  statLabelPending: {
-    color: "#C026D3",
-    opacity: 0.7,
-  },
-  statNumberCompleted: {
-    color: "#16A34A",
-  },
-  statLabelCompleted: {
-    color: "#16A34A",
-    opacity: 0.7,
-  },
-  tasksList: {
-    flex: 1,
-    paddingHorizontal: 24,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    color: "#6B7280",
-    marginBottom: 12,
-  },
-  sectionTitleMuted: {
-    color: "#9CA3AF",
-    marginBottom: 12,
-  },
-  emptyState: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 80,
-  },
-  emptyTitle: {
-    color: "#9CA3AF",
-    marginTop: 16,
-  },
-  emptySubtitle: {
-    color: "#9CA3AF",
-  },
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    width: 56,
-    height: 56,
-    backgroundColor: "#D946EF",
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#d946ef",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-});

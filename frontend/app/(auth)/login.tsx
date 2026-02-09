@@ -15,6 +15,9 @@ import { Button, Input, Logo, Typography } from "@/components/ui";
 import { authService } from "@/services/api/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
 
+import { layout } from "@/styles";
+import { styles } from "./login.styles";
+
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,15 +45,15 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.flex} edges={["top", "bottom"]}>
+    <View style={layout.container}>
+      <SafeAreaView style={layout.flex} edges={["top", "bottom"]}>
         <View style={styles.logoContainer}>
           <Logo size="lg" />
         </View>
 
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.flex}
+          style={layout.flex}
         >
           <ScrollView
             contentContainerStyle={styles.scrollContent}
@@ -137,65 +140,3 @@ export default function LoginScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  flex: {
-    flex: 1,
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginVertical: 24,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-  },
-  content: {
-    paddingHorizontal: 24,
-  },
-  headerSection: {
-    marginBottom: 40,
-  },
-  title: {
-    color: "#111827",
-    marginBottom: 8,
-  },
-  subtitle: {
-    color: "#6B7280",
-  },
-  form: {
-    gap: 20,
-  },
-  forgotPassword: {
-    alignSelf: "flex-end",
-  },
-  linkText: {
-    color: "#2563EB",
-  },
-  errorBox: {
-    backgroundColor: "#FEF2F2",
-    borderWidth: 1,
-    borderColor: "#FECACA",
-    borderRadius: 12,
-    padding: 16,
-  },
-  errorText: {
-    color: "#DC2626",
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingVertical: 24,
-  },
-  footerText: {
-    color: "#6B7280",
-  },
-  footerLink: {
-    color: "#2563EB",
-    fontWeight: "600",
-  },
-});

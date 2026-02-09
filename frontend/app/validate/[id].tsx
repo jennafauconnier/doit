@@ -7,6 +7,9 @@ import * as ImagePicker from "expo-image-picker";
 
 import { Typography, Button } from "@/components/ui";
 import { useTasksStore } from "@/stores/tasks.store";
+import { layout } from "@/styles";
+import { styles } from "./[id].styles";
+
 
 export default function ValidateScreen() {
   const router = useRouter();
@@ -59,14 +62,14 @@ export default function ValidateScreen() {
 
   if (!task) {
     return (
-      <SafeAreaView style={styles.notFound}>
+      <SafeAreaView style={layout.flex}>
         <Typography>Tâche introuvable</Typography>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={layout.container} edges={["top"]}>
       {/* Header */}
       <View style={styles.header}>
         <Typography variant="h2" style={styles.headerTitle}>
@@ -127,78 +130,3 @@ export default function ValidateScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  notFound: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-  },
-  headerTitle: {
-    color: "#111827",
-    flex: 1,
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 20,
-    backgroundColor: "#F3F4F6",
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-  },
-  taskTitle: {
-    color: "#374151",
-    marginBottom: 24,
-  },
-  previewContainer: {
-    marginBottom: 24,
-  },
-  previewImage: {
-    width: "100%",
-    height: 256,
-    borderRadius: 16,
-  },
-  removeButton: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 32,
-    height: 32,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  optionsRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
-  },
-  optionCard: {
-    flex: 1,
-    height: 128,
-    backgroundColor: "#F3F4F6",
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  optionLabel: {
-    color: "#6B7280",
-    marginTop: 8,
-  },
-});
