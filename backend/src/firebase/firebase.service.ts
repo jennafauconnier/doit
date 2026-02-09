@@ -1,6 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
 export class FirebaseService implements OnModuleInit {
@@ -15,6 +17,7 @@ export class FirebaseService implements OnModuleInit {
 
       this.app = admin.initializeApp({
         credential: admin.credential.cert(serviceAccountPath),
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
       });
     } else {
       this.app = admin.apps[0]!;
@@ -27,5 +30,9 @@ export class FirebaseService implements OnModuleInit {
 
   get firestore() {
     return this.app.firestore();
+  }
+
+  get storage() {
+    return this.app.storage().bucket();
   }
 }

@@ -10,6 +10,7 @@ interface TasksState {
   updateTask: (id: string, data: UpdateTaskRequest) => Promise<void>;
   toggleTask: (task: Task) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
+  validateTask: (id: string, photoUri: string) => Promise<void>;
 }
 
 export const useTasksStore = create<TasksState>((set, get) => ({
@@ -67,6 +68,19 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       }));
     } catch (error: any) {
       set({ error: error.message || "Erreur lors de la suppression", isLoading: false });
+    }
+  },
+
+  validateTask: async (id: string, photoUri: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const validated = await tasksService.validate(id, photoUri);
+      set((state) => ({
+        tasks: state.tasks.map((t) => (t.id === id ? validated : t)),
+        isLoading: false,
+      }));
+    } catch (error: any) {
+      set({ error: error.message || 'Erreur lors de la validation', isLoading: false });
     }
   },
 }));

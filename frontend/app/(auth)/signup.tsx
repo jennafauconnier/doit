@@ -5,13 +5,15 @@ import {
   Platform,
   ScrollView,
   Pressable,
+  StyleSheet,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button, Input, Typography, IconButton, Logo } from "@/components/ui";
+import { Button, Input, Typography, Logo } from "@/components/ui";
+import { IconButton } from "react-native-paper";
 import { authService } from "@/services/api/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
 
@@ -61,49 +63,44 @@ export default function SignupScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white">
-      <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
-        {/* Header Row: Back + Logo centered */}
+    <View style={styles.container}>
+      <SafeAreaView style={styles.flex} edges={["top", "bottom"]}>
+        {/* Header Row */}
         <Animated.View
           entering={FadeInUp.delay(50).springify()}
-          className="flex-row items-center justify-between px-4 py-2"
+          style={styles.header}
         >
-          {/* Back Button */}
           <Link href="/(auth)/login" asChild>
             <IconButton
-              variant="ghost"
-              size="md"
-              icon={<Ionicons name="arrow-back" size={24} color="#111" />}
+              icon={({ color }) => (
+                <Ionicons name="arrow-back" size={24} color="#111" />
+              )}
+              onPress={() => {}}
             />
           </Link>
-
-          {/* Logo centered */}
           <Logo size="md" />
-
-          {/* Empty space for balance */}
-          <View className="w-11" />
+          <View style={styles.headerSpacer} />
         </Animated.View>
 
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1"
+          style={styles.flex}
         >
-          {/* Centered Content */}
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+            contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View className="px-6">
+            <View style={styles.content}>
               {/* Header */}
               <Animated.View
                 entering={FadeInUp.delay(100).springify()}
-                className="mt-4 mb-8"
+                style={styles.titleSection}
               >
-                <Typography variant="h1" className="text-gray-900 mb-2">
+                <Typography variant="h1" style={styles.title}>
                   Créer un compte ✨
                 </Typography>
-                <Typography variant="bodyLarge" className="text-gray-500">
+                <Typography variant="bodyLarge" style={styles.subtitle}>
                   Rejoignez-nous et organisez votre vie
                 </Typography>
               </Animated.View>
@@ -111,7 +108,7 @@ export default function SignupScreen() {
               {/* Form */}
               <Animated.View
                 entering={FadeInDown.delay(200).springify()}
-                className="gap-4"
+                style={styles.form}
               >
                 <Input
                   label="Nom d'utilisateur"
@@ -119,10 +116,7 @@ export default function SignupScreen() {
                   onChangeText={setUsername}
                   placeholder="johndoe"
                   autoCapitalize="none"
-                  autoComplete="username"
-                  leftIcon={
-                    <Ionicons name="person-outline" size={20} color="#9ca3af" />
-                  }
+                  leftIcon="account-outline"
                 />
 
                 <Input
@@ -132,10 +126,7 @@ export default function SignupScreen() {
                   placeholder="votre@email.com"
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  autoComplete="email"
-                  leftIcon={
-                    <Ionicons name="mail-outline" size={20} color="#9ca3af" />
-                  }
+                  leftIcon="email-outline"
                 />
 
                 <Input
@@ -144,15 +135,8 @@ export default function SignupScreen() {
                   onChangeText={setPassword}
                   placeholder="Minimum 8 caractères"
                   secureTextEntry
-                  autoComplete="new-password"
                   helperText="Doit contenir au moins 8 caractères"
-                  leftIcon={
-                    <Ionicons
-                      name="lock-closed-outline"
-                      size={20}
-                      color="#9ca3af"
-                    />
-                  }
+                  leftIcon="lock-outline"
                 />
 
                 <Input
@@ -161,46 +145,29 @@ export default function SignupScreen() {
                   onChangeText={setConfirmPassword}
                   placeholder="Confirmez votre mot de passe"
                   secureTextEntry
-                  autoComplete="new-password"
-                  leftIcon={
-                    <Ionicons
-                      name="shield-checkmark-outline"
-                      size={20}
-                      color="#9ca3af"
-                    />
-                  }
+                  leftIcon="shield-check-outline"
                 />
 
                 {error ? (
-                  <View className="bg-red-50 border border-red-200 rounded-xl p-4">
-                    <Typography variant="caption" className="text-red-600">
+                  <View style={styles.errorBox}>
+                    <Typography variant="caption" style={styles.errorText}>
                       {error}
                     </Typography>
                   </View>
                 ) : null}
 
-                <Typography
-                  variant="caption"
-                  className="text-gray-400 text-center"
-                >
+                <Typography variant="caption" style={styles.termsText}>
                   En créant un compte, vous acceptez nos{" "}
-                  <Typography variant="caption" className="text-blue-600">
+                  <Typography variant="caption" style={styles.linkText}>
                     Conditions d'utilisation
                   </Typography>{" "}
                   et notre{" "}
-                  <Typography variant="caption" className="text-blue-600">
+                  <Typography variant="caption" style={styles.linkText}>
                     Politique de confidentialité
                   </Typography>
                 </Typography>
 
-                <Button
-                  onPress={handleSignup}
-                  isLoading={isLoading}
-                  fullWidth
-                  rightIcon={
-                    <Ionicons name="checkmark-circle" size={20} color="#fff" />
-                  }
-                >
+                <Button onPress={handleSignup} isLoading={isLoading} fullWidth>
                   Créer mon compte
                 </Button>
               </Animated.View>
@@ -210,14 +177,12 @@ export default function SignupScreen() {
           {/* Footer */}
           <Animated.View
             entering={FadeInDown.delay(400).springify()}
-            className="flex-row justify-center py-6"
+            style={styles.footer}
           >
-            <Typography className="text-gray-500">Déjà un compte ? </Typography>
+            <Typography style={styles.footerText}>Déjà un compte ? </Typography>
             <Link href="/(auth)/login" asChild>
               <Pressable>
-                <Typography className="text-blue-600 font-semibold">
-                  Se connecter
-                </Typography>
+                <Typography style={styles.footerLink}>Se connecter</Typography>
               </Pressable>
             </Link>
           </Animated.View>
@@ -226,3 +191,73 @@ export default function SignupScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  flex: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  headerSpacer: {
+    width: 44,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
+  content: {
+    paddingHorizontal: 24,
+  },
+  titleSection: {
+    marginTop: 16,
+    marginBottom: 32,
+  },
+  title: {
+    color: "#111827",
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: "#6B7280",
+  },
+  form: {
+    gap: 16,
+  },
+  errorBox: {
+    backgroundColor: "#FEF2F2",
+    borderWidth: 1,
+    borderColor: "#FECACA",
+    borderRadius: 12,
+    padding: 16,
+  },
+  errorText: {
+    color: "#DC2626",
+  },
+  termsText: {
+    color: "#9CA3AF",
+    textAlign: "center",
+  },
+  linkText: {
+    color: "#2563EB",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    paddingVertical: 24,
+  },
+  footerText: {
+    color: "#6B7280",
+  },
+  footerLink: {
+    color: "#2563EB",
+    fontWeight: "600",
+  },
+});

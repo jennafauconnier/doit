@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -9,6 +9,8 @@ type TaskRecord = {
   description?: string;
   dueAt?: Date;
   completed: boolean;
+  proofPhoto?: string; 
+  validatedAt?: Date;
   userId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -31,6 +33,8 @@ export class TasksService {
       description: data.description,
       dueAt: this.normalizeDate(data.dueAt),
       completed: data.completed ?? false,
+      proofPhoto: data.proofPhoto,  // Changé
+      validatedAt: this.normalizeDate(data.validatedAt),
       userId: data.userId,
       createdAt: this.normalizeDate(data.createdAt)!,
       updatedAt: this.normalizeDate(data.updatedAt)!,
@@ -80,7 +84,7 @@ export class TasksService {
 
   async update(userId: string, id: string, dto: UpdateTaskDto) {
     const docRef = this.firebase.firestore.collection('tasks').doc(id);
-    const existing = await this.findOne(userId, id);
+    await this.findOne(userId, id);
 
     const updates: Record<string, any> = { updatedAt: new Date() };
     if (dto.title !== undefined) updates.title = dto.title;
@@ -97,5 +101,34 @@ export class TasksService {
     await this.findOne(userId, id);
     await this.firebase.firestore.collection('tasks').doc(id).delete();
     return { id };
+  }
+
+  async validate(userId: string, id: string, file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('Photo requise pour valider la tâche');
+    }
+
+    const task = await this.findOne(userId, id);
+
+    if (task.validatedAt) {
+      throw new BadRequestException('Tâche déjà validée');
+    }
+
+    // Convertir en base64 et stocker dans Firestore
+    const base64Photo = file.buffer.toString('base64');
+    const proofPhoto = `data:${file.mimetype};base64,${base64Photo}`;
+
+    // Update task
+    const now = new Date();
+    const docRef = this.firebase.firestore.collection('tasks').doc(id);
+    await docRef.update({
+      proofPhoto,
+      validatedAt: now,
+      completed: true,
+      updatedAt: now,
+    });
+
+    const updated = await docRef.get();
+    return this.mapDoc(updated);
   }
 }

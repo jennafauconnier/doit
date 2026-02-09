@@ -6,6 +6,8 @@ export interface Task {
   description?: string;
   dueAt?: string;
   completed: boolean;
+  proofPhoto?: string;
+  validatedAt?: string;
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -44,4 +46,18 @@ export const tasksService = {
     apiClient<{ id: string }>(`/tasks/${id}`, {
       method: "DELETE",
     }),
+
+  validate: (id: string, photoUri: string) => {
+    const formData = new FormData();
+    formData.append('photo', {
+      uri: photoUri,
+      type: 'image/jpeg',
+      name: 'proof.jpg',
+    } as any);
+  
+    return apiClient<Task>(`/tasks/${id}/validate`, {
+      method: 'POST',
+      body: formData,
+    } as any);
+  },
 };

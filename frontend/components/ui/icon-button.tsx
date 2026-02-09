@@ -1,44 +1,36 @@
-import { Pressable, ActivityIndicator } from "react-native";
-import { tv, type VariantProps } from "tailwind-variants";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from "react-native-reanimated";
+import { StyleSheet } from "react-native";
+import { IconButton as PaperIconButton } from "react-native-paper";
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+type IconButtonVariant = "solid" | "outline" | "ghost" | "soft";
+type IconButtonSize = "sm" | "md" | "lg";
 
-const iconButtonVariants = tv({
-  base: "items-center justify-center rounded-full",
-  variants: {
-    variant: {
-      solid: "bg-typography-950",
-      outline: "bg-transparent border-2 border-typography-200",
-      ghost: "bg-transparent",
-      soft: "bg-typography-100",
-    },
-    size: {
-      sm: "w-9 h-9",
-      md: "w-11 h-11",
-      lg: "w-14 h-14",
-    },
-    disabled: {
-      true: "opacity-50",
-    },
-  },
-  defaultVariants: {
-    variant: "ghost",
-    size: "md",
-  },
-});
-
-type IconButtonVariants = VariantProps<typeof iconButtonVariants>;
-
-interface IconButtonProps extends IconButtonVariants {
-  icon: React.ReactNode;
-  onPress?: () => void;
+interface IconButtonProps {
+  icon: string; // Paper utilise des noms d'icônes Material
+  variant?: IconButtonVariant;
+  size?: IconButtonSize;
+  disabled?: boolean;
   isLoading?: boolean;
+  onPress?: () => void;
 }
+
+const modeMap: Record<IconButtonVariant, "contained" | "outlined" | "contained-tonal" | undefined> = {
+  solid: "contained",
+  outline: "outlined",
+  ghost: undefined,
+  soft: "contained-tonal",
+};
+
+const sizeMap: Record<IconButtonSize, number> = {
+  sm: 36,
+  md: 44,
+  lg: 56,
+};
+
+const iconSizeMap: Record<IconButtonSize, number> = {
+  sm: 20,
+  md: 24,
+  lg: 28,
+};
 
 export function IconButton({
   icon,
@@ -48,39 +40,14 @@ export function IconButton({
   isLoading,
   onPress,
 }: IconButtonProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.9, { damping: 15, stiffness: 400 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 400 });
-  };
-
-  const isDisabled = disabled || isLoading;
-
   return (
-    <AnimatedPressable
+    <PaperIconButton
+      icon={isLoading ? "loading" : icon}
+      mode={modeMap[variant]}
+      size={iconSizeMap[size]}
+      disabled={disabled || isLoading}
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      disabled={isDisabled}
-      style={animatedStyle}
-      className={iconButtonVariants({ variant, size, disabled: isDisabled })}
-    >
-      {isLoading ? (
-        <ActivityIndicator
-          color={variant === "solid" ? "#fff" : "#171717"}
-          size="small"
-        />
-      ) : (
-        icon
-      )}
-    </AnimatedPressable>
+      style={{ width: sizeMap[size], height: sizeMap[size] }}
+    />
   );
 }

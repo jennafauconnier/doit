@@ -1,55 +1,58 @@
-import { Text as RNText, type TextProps as RNTextProps } from "react-native";
-import { tv, type VariantProps } from "tailwind-variants";
+import { Text as PaperText, type TextProps as PaperTextProps } from "react-native-paper";
+import { StyleSheet, type TextStyle } from "react-native";
 
-const textVariants = tv({
-  base: "text-typography-900",
-  variants: {
-    variant: {
-      h1: "text-4xl font-bold tracking-tight",
-      h2: "text-3xl font-bold tracking-tight",
-      h3: "text-2xl font-semibold",
-      h4: "text-xl font-semibold",
-      body: "text-base",
-      bodyLarge: "text-lg",
-      caption: "text-sm text-typography-500",
-      label: "text-sm font-medium text-typography-700",
-      link: "text-base text-info-500 underline",
-    },
-    align: {
-      left: "text-left",
-      center: "text-center",
-      right: "text-right",
-    },
-    muted: {
-      true: "text-typography-500",
-    },
-  },
-  defaultVariants: {
-    variant: "body",
-    align: "left",
-  },
-});
+type TypographyVariant = "h1" | "h2" | "h3" | "h4" | "body" | "bodyLarge" | "caption" | "label" | "link";
+type TextAlign = "left" | "center" | "right";
 
-type TextVariants = VariantProps<typeof textVariants>;
+// Mapping vers les variants de Paper
+const variantMap: Record<TypographyVariant, PaperTextProps["variant"]> = {
+  h1: "displaySmall",
+  h2: "headlineLarge",
+  h3: "headlineMedium",
+  h4: "headlineSmall",
+  body: "bodyLarge",
+  bodyLarge: "bodyLarge",
+  caption: "bodySmall",
+  label: "labelLarge",
+  link: "bodyLarge",
+};
 
-interface TextProps extends RNTextProps, TextVariants {
+interface TypographyProps {
   children: React.ReactNode;
+  variant?: TypographyVariant;
+  align?: TextAlign;
+  muted?: boolean;
+  style?: TextStyle;
 }
 
 export function Typography({
   children,
-  variant,
-  align,
+  variant = "body",
+  align = "left",
   muted,
-  className,
-  ...props
-}: TextProps) {
+  style,
+}: TypographyProps) {
   return (
-    <RNText
-      className={textVariants({ variant, align, muted, className })}
-      {...props}
+    <PaperText
+      variant={variantMap[variant]}
+      style={[
+        { textAlign: align },
+        muted && styles.muted,
+        variant === "link" && styles.link,
+        style,
+      ]}
     >
       {children}
-    </RNText>
+    </PaperText>
   );
 }
+
+const styles = StyleSheet.create({
+  muted: {
+    opacity: 0.6,
+  },
+  link: {
+    color: "#0EA5E9",
+    textDecorationLine: "underline",
+  },
+});

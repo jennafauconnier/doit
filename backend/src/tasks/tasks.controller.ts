@@ -7,8 +7,11 @@ import {
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -49,5 +52,15 @@ export class TasksController {
   @Delete(':id')
   remove(@Req() req: AuthRequest, @Param('id') id: string) {
     return this.tasksService.remove(req.user.uid, id);
+  }
+
+  @Post(':id/validate')
+  @UseInterceptors(FileInterceptor('photo'))
+  validate(
+    @Req() req: AuthRequest,
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.tasksService.validate(req.user.uid, id, file);
   }
 }
