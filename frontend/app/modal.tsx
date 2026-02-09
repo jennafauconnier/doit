@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { View, Pressable, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -33,35 +39,31 @@ export default function ModalScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
+        style={styles.flex}
       >
         {/* Header */}
-        <View className="flex-row items-center justify-between px-6 py-4">
-          <Typography variant="h2" className="text-gray-900">
+        <View style={styles.header}>
+          <Typography variant="h2" style={styles.title}>
             Nouvelle tâche
           </Typography>
-          <Pressable
-            onPress={handleClose}
-            className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
-          >
+          <Pressable onPress={handleClose} style={styles.closeButton}>
             <Ionicons name="close" size={24} color="#6b7280" />
           </Pressable>
         </View>
 
         {/* Form */}
-        <View className="flex-1 px-6">
+        <View style={styles.form}>
           <Input
             label="Titre"
             placeholder="Ex: Appeler le médecin"
             value={title}
             onChangeText={setTitle}
-            autoFocus
           />
 
-          <View className="mt-6">
+          <View style={styles.buttonContainer}>
             <Button
               fullWidth
               onPress={handleCreate}
@@ -76,3 +78,38 @@ export default function ModalScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  flex: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+  },
+  title: {
+    color: "#111827",
+  },
+  closeButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 20,
+    backgroundColor: "#F3F4F6",
+  },
+  form: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
+  buttonContainer: {
+    marginTop: 24,
+  },
+});

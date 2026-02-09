@@ -1,72 +1,34 @@
-import { Pressable, Text, ActivityIndicator, View } from "react-native";
-import { tv, type VariantProps } from "tailwind-variants";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from "react-native-reanimated";
+import { StyleSheet } from "react-native";
+import { Button as PaperButton, ActivityIndicator } from "react-native-paper";
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+type ButtonVariant = "solid" | "outline" | "ghost" | "soft";
+type ButtonSize = "sm" | "md" | "lg" | "xl";
 
-const buttonVariants = tv({
-  base: "flex-row items-center justify-center rounded-2xl",
-  variants: {
-    variant: {
-      solid: "bg-typography-950",
-      outline: "bg-transparent border-2 border-typography-950",
-      ghost: "bg-transparent",
-      soft: "bg-typography-100",
-    },
-    size: {
-      sm: "h-10 px-4 gap-2",
-      md: "h-12 px-5 gap-2",
-      lg: "h-14 px-6 gap-3",
-      xl: "h-16 px-8 gap-3",
-    },
-    fullWidth: {
-      true: "w-full",
-    },
-    disabled: {
-      true: "opacity-50",
-    },
-  },
-  defaultVariants: {
-    variant: "solid",
-    size: "lg",
-  },
-});
-
-const textVariants = tv({
-  base: "font-semibold",
-  variants: {
-    variant: {
-      solid: "text-typography-0",
-      outline: "text-typography-950",
-      ghost: "text-typography-950",
-      soft: "text-typography-800",
-    },
-    size: {
-      sm: "text-sm",
-      md: "text-base",
-      lg: "text-base",
-      xl: "text-lg",
-    },
-  },
-  defaultVariants: {
-    variant: "solid",
-    size: "lg",
-  },
-});
-
-type ButtonVariants = VariantProps<typeof buttonVariants>;
-
-interface ButtonProps extends ButtonVariants {
+interface ButtonProps {
   children: string;
-  onPress?: () => void;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  disabled?: boolean;
   isLoading?: boolean;
+  onPress?: () => void;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
+
+const modeMap: Record<ButtonVariant, "contained" | "outlined" | "text" | "contained-tonal"> = {
+  solid: "contained",
+  outline: "outlined",
+  ghost: "text",
+  soft: "contained-tonal",
+};
+
+const sizeStyles: Record<ButtonSize, { height: number; fontSize: number }> = {
+  sm: { height: 40, fontSize: 14 },
+  md: { height: 48, fontSize: 16 },
+  lg: { height: 56, fontSize: 16 },
+  xl: { height: 64, fontSize: 18 },
+};
 
 export function Button({
   children,
@@ -79,48 +41,36 @@ export function Button({
   leftIcon,
   rightIcon,
 }: ButtonProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.97, { damping: 15, stiffness: 400 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 400 });
-  };
-
-  const isDisabled = disabled || isLoading;
+  const sizeStyle = sizeStyles[size];
 
   return (
-    <AnimatedPressable
+    <PaperButton
+      mode={modeMap[variant]}
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      disabled={isDisabled}
-      style={animatedStyle}
-      className={buttonVariants({
-        variant,
-        size,
-        fullWidth,
-        disabled: isDisabled,
-      })}
+      disabled={disabled || isLoading}
+      loading={isLoading}
+      icon={leftIcon ? () => leftIcon : undefined}
+      contentStyle={[
+        styles.content,
+        { height: sizeStyle.height },
+        fullWidth && styles.fullWidth,
+      ]}
+      labelStyle={{ fontSize: sizeStyle.fontSize, fontWeight: "600" }}
+      style={[styles.button, fullWidth && styles.fullWidth]}
     >
-      {isLoading ? (
-        <ActivityIndicator
-          color={variant === "solid" ? "#fff" : "#171717"}
-          size="small"
-        />
-      ) : (
-        <>
-          {leftIcon}
-          <Text className={textVariants({ variant, size })}>{children}</Text>
-          {rightIcon}
-        </>
-      )}
-    </AnimatedPressable>
+      {children}
+    </PaperButton>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    borderRadius: 16,
+  },
+  content: {
+    paddingHorizontal: 8,
+  },
+  fullWidth: {
+    width: "100%",
+  },
+});

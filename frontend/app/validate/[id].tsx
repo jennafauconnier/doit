@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { View, Image, Pressable } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+import { useState } from "react";
+import { View, Image, Pressable, StyleSheet } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 
-import { Typography, Button } from '@/components/ui';
-import { useTasksStore } from '@/stores/tasks.store';
+import { Typography, Button } from "@/components/ui";
+import { useTasksStore } from "@/stores/tasks.store";
 
 export default function ValidateScreen() {
   const router = useRouter();
@@ -19,27 +19,27 @@ export default function ValidateScreen() {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.4, 
+      quality: 0.4,
     });
-  
+
     if (!result.canceled) {
       setPhotoUri(result.assets[0].uri);
     }
   };
-  
+
   const takePhoto = async () => {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) return;
-  
+
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.4,
     });
-  
+
     if (!result.canceled) {
       setPhotoUri(result.assets[0].uri);
     }
@@ -59,64 +59,55 @@ export default function ValidateScreen() {
 
   if (!task) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
+      <SafeAreaView style={styles.notFound}>
         <Typography>Tâche introuvable</Typography>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 py-4">
-        <Typography variant="h2" className="text-gray-900 flex-1">
+      <View style={styles.header}>
+        <Typography variant="h2" style={styles.headerTitle}>
           Valider la tâche
         </Typography>
-        <Pressable
-          onPress={() => router.back()}
-          className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
-        >
+        <Pressable onPress={() => router.back()} style={styles.closeButton}>
           <Ionicons name="close" size={24} color="#6b7280" />
         </Pressable>
       </View>
 
-      <View className="flex-1 px-6">
-        <Typography variant="bodyLarge" className="text-gray-700 mb-6">
+      <View style={styles.content}>
+        <Typography variant="bodyLarge" style={styles.taskTitle}>
           {task.title}
         </Typography>
 
         {/* Photo Preview */}
         {photoUri ? (
-          <View className="mb-6">
+          <View style={styles.previewContainer}>
             <Image
               source={{ uri: photoUri }}
-              className="w-full h-64 rounded-2xl"
+              style={styles.previewImage}
               resizeMode="cover"
             />
             <Pressable
               onPress={() => setPhotoUri(null)}
-              className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full items-center justify-center"
+              style={styles.removeButton}
             >
               <Ionicons name="close" size={20} color="#fff" />
             </Pressable>
           </View>
         ) : (
-          <View className="flex-row gap-3 mb-6">
-            <Pressable
-              onPress={takePhoto}
-              className="flex-1 h-32 bg-gray-100 rounded-2xl items-center justify-center"
-            >
+          <View style={styles.optionsRow}>
+            <Pressable onPress={takePhoto} style={styles.optionCard}>
               <Ionicons name="camera-outline" size={32} color="#6b7280" />
-              <Typography variant="caption" className="text-gray-500 mt-2">
+              <Typography variant="caption" style={styles.optionLabel}>
                 Prendre une photo
               </Typography>
             </Pressable>
-            <Pressable
-              onPress={pickImage}
-              className="flex-1 h-32 bg-gray-100 rounded-2xl items-center justify-center"
-            >
+            <Pressable onPress={pickImage} style={styles.optionCard}>
               <Ionicons name="images-outline" size={32} color="#6b7280" />
-              <Typography variant="caption" className="text-gray-500 mt-2">
+              <Typography variant="caption" style={styles.optionLabel}>
                 Galerie
               </Typography>
             </Pressable>
@@ -135,3 +126,79 @@ export default function ValidateScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  notFound: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+  },
+  headerTitle: {
+    color: "#111827",
+    flex: 1,
+  },
+  closeButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 20,
+    backgroundColor: "#F3F4F6",
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
+  taskTitle: {
+    color: "#374151",
+    marginBottom: 24,
+  },
+  previewContainer: {
+    marginBottom: 24,
+  },
+  previewImage: {
+    width: "100%",
+    height: 256,
+    borderRadius: 16,
+  },
+  removeButton: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 32,
+    height: 32,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  optionsRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 24,
+  },
+  optionCard: {
+    flex: 1,
+    height: 128,
+    backgroundColor: "#F3F4F6",
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  optionLabel: {
+    color: "#6B7280",
+    marginTop: 8,
+  },
+});

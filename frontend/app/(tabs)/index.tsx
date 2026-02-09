@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import { View, ScrollView, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -24,16 +24,16 @@ export default function HomeScreen() {
   const completedTasks = tasks.filter((t) => !!t.validatedAt);
 
   return (
-    <View className="flex-1 bg-white">
-      <SafeAreaView className="flex-1" edges={["top"]}>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.flex} edges={["top"]}>
         {/* Header */}
-        <View className="px-6 pt-4 pb-4">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <Typography variant="bodyLarge" className="text-gray-500">
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <View style={styles.greeting}>
+              <Typography variant="bodyLarge" style={styles.greetingLabel}>
                 Bonjour
               </Typography>
-              <Typography variant="bodyLarge" className="text-gray-900">
+              <Typography variant="bodyLarge" style={styles.greetingName}>
                 {user?.username || "Utilisateur"} 👋
               </Typography>
             </View>
@@ -41,20 +41,20 @@ export default function HomeScreen() {
           </View>
 
           {/* Stats */}
-          <View className="flex-row gap-3 mt-6">
-            <View className="flex-1 bg-fuchsia-50 rounded-2xl p-4">
-              <Typography variant="h2" className="text-fuchsia-600">
+          <View style={styles.statsRow}>
+            <View style={[styles.statCard, styles.statCardPending]}>
+              <Typography variant="h2" style={styles.statNumberPending}>
                 {pendingTasks.length}
               </Typography>
-              <Typography variant="caption" className="text-fuchsia-600/70">
+              <Typography variant="caption" style={styles.statLabelPending}>
                 En cours
               </Typography>
             </View>
-            <View className="flex-1 bg-green-50 rounded-2xl p-4">
-              <Typography variant="h2" className="text-green-600">
+            <View style={[styles.statCard, styles.statCardCompleted]}>
+              <Typography variant="h2" style={styles.statNumberCompleted}>
                 {completedTasks.length}
               </Typography>
-              <Typography variant="caption" className="text-green-600/70">
+              <Typography variant="caption" style={styles.statLabelCompleted}>
                 Validées
               </Typography>
             </View>
@@ -63,13 +63,13 @@ export default function HomeScreen() {
 
         {/* Tasks List */}
         <ScrollView
-          className="flex-1 px-6"
+          style={styles.tasksList}
           showsVerticalScrollIndicator={false}
         >
           {/* Pending Tasks */}
           {pendingTasks.length > 0 && (
-            <View className="mb-6">
-              <Typography variant="label" className="text-gray-500 mb-3">
+            <View style={styles.section}>
+              <Typography variant="label" style={styles.sectionTitle}>
                 À FAIRE
               </Typography>
               {pendingTasks.map((task, index) => (
@@ -90,8 +90,8 @@ export default function HomeScreen() {
 
           {/* Completed Tasks */}
           {completedTasks.length > 0 && (
-            <View className="mb-6">
-              <Typography variant="label" className="text-gray-400 mb-3">
+            <View style={styles.section}>
+              <Typography variant="label" style={styles.sectionTitleMuted}>
                 VALIDÉES
               </Typography>
               {completedTasks.map((task, index) => (
@@ -112,20 +112,20 @@ export default function HomeScreen() {
 
           {/* Empty State */}
           {!isLoading && tasks.length === 0 && (
-            <View className="items-center justify-center py-20">
+            <View style={styles.emptyState}>
               <Ionicons name="checkbox-outline" size={64} color="#e5e7eb" />
-              <Typography variant="bodyLarge" className="text-gray-400 mt-4">
+              <Typography variant="bodyLarge" style={styles.emptyTitle}>
                 Aucune tâche pour le moment
               </Typography>
-              <Typography variant="caption" className="text-gray-400">
+              <Typography variant="caption" style={styles.emptySubtitle}>
                 Appuie sur + pour en ajouter une
               </Typography>
             </View>
           )}
 
           {isLoading && tasks.length === 0 && (
-            <View className="items-center justify-center py-20">
-              <Typography variant="bodyLarge" className="text-gray-400">
+            <View style={styles.emptyState}>
+              <Typography variant="bodyLarge" style={styles.emptyTitle}>
                 Chargement...
               </Typography>
             </View>
@@ -133,20 +133,114 @@ export default function HomeScreen() {
         </ScrollView>
 
         {/* FAB */}
-        <Pressable
-          onPress={() => router.push("/modal")}
-          className="absolute bottom-6 right-6 w-14 h-14 bg-fuchsia-500 rounded-full items-center justify-center shadow-lg"
-          style={{
-            shadowColor: "#d946ef",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 8,
-          }}
-        >
+        <Pressable onPress={() => router.push("/modal")} style={styles.fab}>
           <Ionicons name="add" size={28} color="#fff" />
         </Pressable>
       </SafeAreaView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  flex: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 16,
+  },
+  headerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  greeting: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  greetingLabel: {
+    color: "#6B7280",
+  },
+  greetingName: {
+    color: "#111827",
+  },
+  statsRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 24,
+  },
+  statCard: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 16,
+  },
+  statCardPending: {
+    backgroundColor: "#FDF4FF",
+  },
+  statCardCompleted: {
+    backgroundColor: "#F0FDF4",
+  },
+  statNumberPending: {
+    color: "#C026D3",
+  },
+  statLabelPending: {
+    color: "#C026D3",
+    opacity: 0.7,
+  },
+  statNumberCompleted: {
+    color: "#16A34A",
+  },
+  statLabelCompleted: {
+    color: "#16A34A",
+    opacity: 0.7,
+  },
+  tasksList: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    color: "#6B7280",
+    marginBottom: 12,
+  },
+  sectionTitleMuted: {
+    color: "#9CA3AF",
+    marginBottom: 12,
+  },
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 80,
+  },
+  emptyTitle: {
+    color: "#9CA3AF",
+    marginTop: 16,
+  },
+  emptySubtitle: {
+    color: "#9CA3AF",
+  },
+  fab: {
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    backgroundColor: "#D946EF",
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#d946ef",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+});

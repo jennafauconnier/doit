@@ -5,10 +5,9 @@ import {
   Platform,
   ScrollView,
   Pressable,
-  Alert,
+  StyleSheet,
 } from "react-native";
 import { Link, router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -43,32 +42,31 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white">
-      <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
-        <View className="items-center my-6">
+    <View style={styles.container}>
+      <SafeAreaView style={styles.flex} edges={["top", "bottom"]}>
+        <View style={styles.logoContainer}>
           <Logo size="lg" />
         </View>
 
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1"
+          style={styles.flex}
         >
-          {/* Centered Content */}
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+            contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View className="px-6">
+            <View style={styles.content}>
               {/* Header */}
               <Animated.View
                 entering={FadeInUp.delay(100).springify()}
-                className="mb-10"
+                style={styles.headerSection}
               >
-                <Typography variant="h1" className="text-gray-900 mb-2">
+                <Typography variant="h1" style={styles.title}>
                   Bon retour 👋
                 </Typography>
-                <Typography variant="bodyLarge" className="text-gray-500">
+                <Typography variant="bodyLarge" style={styles.subtitle}>
                   Connectez-vous pour accéder à vos tâches
                 </Typography>
               </Animated.View>
@@ -76,19 +74,14 @@ export default function LoginScreen() {
               {/* Form */}
               <Animated.View
                 entering={FadeInDown.delay(200).springify()}
-                className="gap-5"
+                style={styles.form}
               >
                 <Input
                   label="Email"
                   value={email}
                   onChangeText={setEmail}
                   placeholder="votre@email.com"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  leftIcon={
-                    <Ionicons name="mail-outline" size={20} color="#9ca3af" />
-                  }
+                  leftIcon="email-outline"
                 />
 
                 <Input
@@ -97,25 +90,18 @@ export default function LoginScreen() {
                   onChangeText={setPassword}
                   placeholder="Entrez votre mot de passe"
                   secureTextEntry
-                  autoComplete="password"
-                  leftIcon={
-                    <Ionicons
-                      name="lock-closed-outline"
-                      size={20}
-                      color="#9ca3af"
-                    />
-                  }
+                  leftIcon="lock-outline"
                 />
 
-                <Pressable className="self-end">
-                  <Typography variant="caption" className="text-blue-600">
+                <Pressable style={styles.forgotPassword}>
+                  <Typography variant="caption" style={styles.linkText}>
                     Mot de passe oublié ?
                   </Typography>
                 </Pressable>
 
                 {error ? (
-                  <View className="bg-red-50 border border-red-200 rounded-xl p-4">
-                    <Typography variant="caption" className="text-red-600">
+                  <View style={styles.errorBox}>
+                    <Typography variant="caption" style={styles.errorText}>
                       {error}
                     </Typography>
                   </View>
@@ -125,9 +111,6 @@ export default function LoginScreen() {
                   onPress={handleLogin}
                   isLoading={isLoading}
                   fullWidth
-                  rightIcon={
-                    <Ionicons name="arrow-forward" size={20} color="#fff" />
-                  }
                 >
                   Se connecter
                 </Button>
@@ -138,16 +121,14 @@ export default function LoginScreen() {
           {/* Footer */}
           <Animated.View
             entering={FadeInDown.delay(400).springify()}
-            className="flex-row justify-center py-6"
+            style={styles.footer}
           >
-            <Typography className="text-gray-500">
+            <Typography style={styles.footerText}>
               Pas encore de compte ?{" "}
             </Typography>
             <Link href="/(auth)/signup" asChild>
               <Pressable>
-                <Typography className="text-blue-600 font-semibold">
-                  S'inscrire
-                </Typography>
+                <Typography style={styles.footerLink}>S'inscrire</Typography>
               </Pressable>
             </Link>
           </Animated.View>
@@ -156,3 +137,65 @@ export default function LoginScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  flex: {
+    flex: 1,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginVertical: 24,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
+  content: {
+    paddingHorizontal: 24,
+  },
+  headerSection: {
+    marginBottom: 40,
+  },
+  title: {
+    color: "#111827",
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: "#6B7280",
+  },
+  form: {
+    gap: 20,
+  },
+  forgotPassword: {
+    alignSelf: "flex-end",
+  },
+  linkText: {
+    color: "#2563EB",
+  },
+  errorBox: {
+    backgroundColor: "#FEF2F2",
+    borderWidth: 1,
+    borderColor: "#FECACA",
+    borderRadius: 12,
+    padding: 16,
+  },
+  errorText: {
+    color: "#DC2626",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    paddingVertical: 24,
+  },
+  footerText: {
+    color: "#6B7280",
+  },
+  footerLink: {
+    color: "#2563EB",
+    fontWeight: "600",
+  },
+});

@@ -1,6 +1,7 @@
-import { Pressable, View } from "react-native";
+import { Pressable, View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Typography, IconButton } from "@/components/ui";
+import { IconButton } from "react-native-paper";
+import { Typography } from "@/components/ui";
 
 interface Task {
   id: string;
@@ -24,32 +25,26 @@ export function TaskItem({
   const isValidated = !!task.validatedAt;
 
   return (
-    <Pressable
-      onPress={onToggle}
-      className="flex-row items-center bg-gray-50 rounded-xl p-4 mb-2"
-    >
+    <Pressable onPress={onToggle} style={styles.container}>
       <View
-        className={`w-6 h-6 rounded-full border-2 items-center justify-center mr-3 ${
-          isValidated
-            ? "bg-green-500 border-green-500"
-            : task.completed
-            ? "bg-fuchsia-500 border-fuchsia-500"
-            : "border-gray-300"
-        }`}
+        style={[
+          styles.checkbox,
+          isValidated && styles.checkboxValidated,
+          !isValidated && task.completed && styles.checkboxCompleted,
+          !isValidated && !task.completed && styles.checkboxEmpty,
+        ]}
       >
         {isValidated && <Ionicons name="checkmark" size={14} color="#fff" />}
       </View>
 
-      <View className="flex-1">
+      <View style={styles.content}>
         <Typography
-          className={`${
-            isValidated ? "text-gray-400 line-through" : "text-gray-800"
-          }`}
+          style={[styles.title, isValidated && styles.titleValidated]}
         >
           {task.title}
         </Typography>
         {isValidated && (
-          <Typography variant="caption" className="text-green-600">
+          <Typography variant="caption" style={styles.validatedLabel}>
             ✓ Validée avec photo
           </Typography>
         )}
@@ -58,19 +53,66 @@ export function TaskItem({
       {/* Bouton Valider (si non validée) */}
       {!isValidated && (
         <IconButton
-          size="sm"
-          variant="soft"
+          icon={({ color }) => (
+            <Ionicons name="camera-outline" size={18} color="#d946ef" />
+          )}
+          size={20}
+          mode="contained-tonal"
           onPress={onValidate}
-          icon={<Ionicons name="camera-outline" size={18} color="#d946ef" />}
         />
       )}
 
       <IconButton
-        size="sm"
-        variant="ghost"
+        icon={({ color }) => (
+          <Ionicons name="trash-outline" size={20} color="#9ca3af" />
+        )}
+        size={20}
         onPress={onDelete}
-        icon={<Ionicons name="trash-outline" size={20} color="#9ca3af" />}
       />
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F9FAFB",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 8,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  checkboxValidated: {
+    backgroundColor: "#22C55E",
+    borderColor: "#22C55E",
+  },
+  checkboxCompleted: {
+    backgroundColor: "#D946EF",
+    borderColor: "#D946EF",
+  },
+  checkboxEmpty: {
+    borderColor: "#D1D5DB",
+  },
+  content: {
+    flex: 1,
+  },
+  title: {
+    color: "#1F2937",
+  },
+  titleValidated: {
+    color: "#9CA3AF",
+    textDecorationLine: "line-through",
+  },
+  validatedLabel: {
+    color: "#16A34A",
+  },
+});

@@ -1,45 +1,63 @@
-import { View, Text } from "react-native";
-import { tv, type VariantProps } from "tailwind-variants";
+import { StyleSheet, View } from "react-native";
+import { Divider as PaperDivider, Text } from "react-native-paper";
 
-const dividerVariants = tv({
-  base: "bg-outline-100",
-  variants: {
-    orientation: {
-      horizontal: "h-px w-full",
-      vertical: "w-px h-full",
-    },
-    spacing: {
-      sm: "my-2",
-      md: "my-4",
-      lg: "my-6",
-    },
-  },
-  defaultVariants: {
-    orientation: "horizontal",
-    spacing: "md",
-  },
-});
+type DividerSpacing = "sm" | "md" | "lg";
 
-type DividerVariants = VariantProps<typeof dividerVariants>;
-
-interface DividerProps extends DividerVariants {
+interface DividerProps {
+  orientation?: "horizontal" | "vertical";
+  spacing?: DividerSpacing;
   label?: string;
 }
 
-export function Divider({ orientation, spacing, label }: DividerProps) {
+const spacingMap: Record<DividerSpacing, number> = {
+  sm: 8,
+  md: 16,
+  lg: 24,
+};
+
+export function Divider({ 
+  orientation = "horizontal", 
+  spacing = "md", 
+  label 
+}: DividerProps) {
+  const margin = spacingMap[spacing];
+
   if (label) {
     return (
-      <View
-        className={`flex-row items-center ${
-          spacing === "sm" ? "my-2" : spacing === "lg" ? "my-6" : "my-4"
-        }`}
-      >
-        <View className="flex-1 h-px bg-outline-100" />
-        <Text className="px-4 text-sm text-typography-400">{label}</Text>
-        <View className="flex-1 h-px bg-outline-100" />
+      <View style={[styles.labelContainer, { marginVertical: margin }]}>
+        <PaperDivider style={styles.flex} />
+        <Text variant="bodySmall" style={styles.label}>
+          {label}
+        </Text>
+        <PaperDivider style={styles.flex} />
       </View>
     );
   }
 
-  return <View className={dividerVariants({ orientation, spacing })} />;
+  if (orientation === "vertical") {
+    return (
+      <View style={[styles.vertical, { marginHorizontal: margin }]} />
+    );
+  }
+
+  return <PaperDivider style={{ marginVertical: margin }} />;
 }
+
+const styles = StyleSheet.create({
+  labelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  flex: {
+    flex: 1,
+  },
+  label: {
+    paddingHorizontal: 16,
+    opacity: 0.6,
+  },
+  vertical: {
+    width: 1,
+    height: "100%",
+    backgroundColor: "#E5E5E5",
+  },
+});
