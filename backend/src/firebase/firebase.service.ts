@@ -17,7 +17,7 @@ export class FirebaseService implements OnModuleInit {
 
       this.app = admin.initializeApp({
         credential: admin.credential.cert(serviceAccountPath),
-        storageBucket: process.env.FIREBASE_STORAGE_BUCKET, // ex: "doit-app.appspot.com"
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
       });
     } else {
       this.app = admin.apps[0]!;
