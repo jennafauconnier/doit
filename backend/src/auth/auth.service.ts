@@ -126,4 +126,16 @@ export class AuthService {
       username: userDoc.data()?.username || userRecord.displayName,
     };
   }
+
+  async registerPushToken(userId: string, pushToken: string) {
+    await this.firebase.firestore
+      .collection('users')
+      .doc(userId)
+      .update({
+        pushToken,
+        updatedAt: new Date(),
+      });
+  
+    return { success: true };
+  }
 }

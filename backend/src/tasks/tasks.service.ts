@@ -14,6 +14,8 @@ type TaskRecord = {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
+  lastReminderSent?: Date;
+  reminderCount?: number; 
 };
 
 @Injectable()
@@ -107,18 +109,16 @@ export class TasksService {
     if (!file) {
       throw new BadRequestException('Photo requise pour valider la tâche');
     }
-
+  
     const task = await this.findOne(userId, id);
-
+  
     if (task.validatedAt) {
       throw new BadRequestException('Tâche déjà validée');
     }
-
-    // Convertir en base64 et stocker dans Firestore
+  
     const base64Photo = file.buffer.toString('base64');
     const proofPhoto = `data:${file.mimetype};base64,${base64Photo}`;
-
-    // Update task
+  
     const now = new Date();
     const docRef = this.firebase.firestore.collection('tasks').doc(id);
     await docRef.update({
@@ -127,7 +127,14 @@ export class TasksService {
       completed: true,
       updatedAt: now,
     });
-
+  
+    await this.firebase.sendPushNotificationToUser(
+      userId,
+      '🎉 Tâche validée !',
+      `La tâche "${task.title}" a été validée avec succès`,
+      { taskId: id, type: 'task_validated' }
+    );
+  
     const updated = await docRef.get();
     return this.mapDoc(updated);
   }

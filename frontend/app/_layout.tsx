@@ -16,6 +16,7 @@ import { Logo } from "@/components/ui";
 import { PaperProvider } from "react-native-paper";
 import { useColorScheme } from "react-native";
 import { darkTheme, lightTheme, styles } from "./_layout.styles";
+import { notificationService } from "@/services/notifications/notifications.service";
 
 export const unstable_settings = {
   initialRouteName: "(auth)",
@@ -41,6 +42,25 @@ function AuthGate({ children }: { children: React.ReactNode }) {
       router.replace("/(auth)/login");
     }
   }, [isAuthenticated, isLoading, segments]);
+
+  useEffect(() => {
+    // Setup notification listeners
+    const cleanup = notificationService.setupNotificationListeners(
+      (notification) => {
+        console.log('Notification reçue:', notification);
+      },
+      (response) => {
+        console.log('Notification tapée:', response);
+        // Naviguer vers la tâche si nécessaire
+        const taskId = response.notification.request.content.data?.taskId;
+        if (taskId) {
+          // router.push(`/validate/${taskId}`);
+        }
+      }
+    );
+  
+    return cleanup;
+  }, []);
 
   if (isLoading) {
     return (

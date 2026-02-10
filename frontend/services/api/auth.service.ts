@@ -38,4 +38,11 @@ export const authService = {
     }),
 
   me: () => apiClient<User>("/auth/me"),
+
+  registerPushToken: (token: string) =>
+    apiClient<void>("/auth/register-push-token", {
+      method: "POST",
+      body: JSON.stringify({ token }),
+      auth: true,
+    }),
 };

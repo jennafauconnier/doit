@@ -9,6 +9,7 @@ import { useAuthStore } from "@/stores/auth.store";
 
 import { layout, colors } from "@/styles";
 import { styles } from "./profile.styles";
+import { notificationService } from "@/services/notifications/notifications.service";
 
 export default function ProfileScreen() {
   const user = useAuthStore((state) => state.user);
@@ -29,6 +30,14 @@ export default function ProfileScreen() {
           },
         },
       ]
+    );
+  };
+
+  const testNotification = async () => {
+    await notificationService.scheduleLocalNotification(
+      '🔔 Test notification',
+      'Ceci est une notification de test !',
+      { test: true }
     );
   };
 
@@ -67,6 +76,15 @@ export default function ProfileScreen() {
               onPress={() => {}}
               isLast
             />
+            <Button 
+              onPress={() => {
+                notificationService.scheduleLocalNotification(
+                  '🎉 Test',
+                  'Notification locale sur simulateur !',
+                  { test: true }
+                );
+              }}
+            >Test notification locale</Button>
           </Card>
 
           {/* Logout */}

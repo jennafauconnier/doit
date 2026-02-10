@@ -7,8 +7,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { PushTokenDto } from './dto/push-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -33,5 +35,20 @@ export class AuthController {
     const token = authHeader.split('Bearer ')[1];
     const decoded = await this.authService.verifyToken(token);
     return this.authService.getUser(decoded.uid);
+  }
+
+  @Post('push-token')
+  async registerPushToken(
+    @Headers('authorization') authHeader: string,
+    @Body() dto: PushTokenDto
+  ) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('Token manquant');
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decoded = await this.authService.verifyToken(token);
+    
+    return this.authService.registerPushToken(decoded.uid, dto.pushToken);
   }
 }
