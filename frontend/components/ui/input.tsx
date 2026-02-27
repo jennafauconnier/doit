@@ -31,7 +31,7 @@ export const Input = forwardRef<RNTextInput, InputProps>(
       secureTextEntry,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [isSecure, setIsSecure] = useState(secureTextEntry);
     const hasError = Boolean(error);
@@ -44,6 +44,7 @@ export const Input = forwardRef<RNTextInput, InputProps>(
           ref={ref}
           label={labelText}
           mode="outlined"
+          autoCapitalize="none"
           disabled={disabled}
           error={hasError}
           secureTextEntry={isSecure}
@@ -69,7 +70,7 @@ export const Input = forwardRef<RNTextInput, InputProps>(
         )}
       </View>
     );
-  }
+  },
 );
 
 Input.displayName = "Input";

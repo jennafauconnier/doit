@@ -16,8 +16,7 @@ import { styles } from "./index.styles";
 export default function HomeScreen() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
-  const { tasks, isLoading, fetchTasks, toggleTask, deleteTask } =
-    useTasksStore();
+  const { tasks, isLoading, fetchTasks, deleteTask } = useTasksStore();
 
   useEffect(() => {
     fetchTasks().catch(() => {});
@@ -78,7 +77,7 @@ export default function HomeScreen() {
                 >
                   <TaskItem
                     task={task}
-                    onToggle={() => toggleTask(task)}
+                    onPress={() => router.push(`/tasks/${task.id}`)}
                     onDelete={() => deleteTask(task.id)}
                     onValidate={() => router.push(`/validate/${task.id}`)}
                   />
@@ -99,7 +98,7 @@ export default function HomeScreen() {
                 >
                   <TaskItem
                     task={task}
-                    onToggle={() => toggleTask(task)}
+                    onPress={() => router.push(`/tasks/${task.id}`)}
                     onDelete={() => deleteTask(task.id)}
                     onValidate={() => {}}
                   />

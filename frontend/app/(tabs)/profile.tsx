@@ -16,28 +16,24 @@ export default function ProfileScreen() {
   const logout = useAuthStore((state) => state.logout);
 
   const handleLogout = () => {
-    Alert.alert(
-      "Déconnexion",
-      "Êtes-vous sûr de vouloir vous déconnecter ?",
-      [
-        { text: "Annuler", style: "cancel" },
-        {
-          text: "Déconnexion",
-          style: "destructive",
-          onPress: async () => {
-            await logout();
-            router.replace("/(auth)/login");
-          },
+    Alert.alert("Déconnexion", "Êtes-vous sûr de vouloir vous déconnecter ?", [
+      { text: "Annuler", style: "cancel" },
+      {
+        text: "Déconnexion",
+        style: "destructive",
+        onPress: async () => {
+          await logout();
+          router.replace("/(auth)/login");
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const testNotification = async () => {
     await notificationService.scheduleLocalNotification(
-      '🔔 Test notification',
-      'Ceci est une notification de test !',
-      { test: true }
+      "🔔 Test notification",
+      "Ceci est une notification de test !",
+      { test: true },
     );
   };
 
@@ -65,26 +61,24 @@ export default function ProfileScreen() {
               label="Notifications"
               onPress={() => {}}
             />
-            <MenuItem
-              icon="moon-outline"
-              label="Thème sombre"
-              onPress={() => {}}
-            />
+            <MenuItem icon="moon-outline" label="bre" onPress={() => {}} />
             <MenuItem
               icon="help-circle-outline"
               label="Aide"
               onPress={() => {}}
               isLast
             />
-            <Button 
+            <Button
               onPress={() => {
                 notificationService.scheduleLocalNotification(
-                  '🎉 Test',
-                  'Notification locale sur simulateur !',
-                  { test: true }
+                  "🎉 Test",
+                  "Notification locale sur simulateur !",
+                  { test: true },
                 );
               }}
-            >Test notification locale</Button>
+            >
+              Test notification locale
+            </Button>
           </Card>
 
           {/* Logout */}

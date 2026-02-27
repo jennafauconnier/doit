@@ -57,7 +57,7 @@ export default function SignupScreen() {
       router.replace("/(tabs)");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Erreur lors de l'inscription"
+        err instanceof Error ? err.message : "Erreur lors de l'inscription",
       );
     } finally {
       setIsLoading(false);
@@ -123,7 +123,7 @@ export default function SignupScreen() {
                 <Input
                   label="Email"
                   value={email}
-                  onChangeText={setEmail}
+                  onChangeText={(text) => setEmail(text.toLowerCase())}
                   placeholder="votre@email.com"
                   leftIcon="email-outline"
                 />

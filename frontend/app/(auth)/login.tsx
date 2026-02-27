@@ -61,7 +61,6 @@ export default function LoginScreen() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.content}>
-              {/* Header */}
               <Animated.View
                 entering={FadeInUp.delay(100).springify()}
                 style={styles.headerSection}
@@ -74,7 +73,6 @@ export default function LoginScreen() {
                 </Typography>
               </Animated.View>
 
-              {/* Form */}
               <Animated.View
                 entering={FadeInDown.delay(200).springify()}
                 style={styles.form}
@@ -110,18 +108,13 @@ export default function LoginScreen() {
                   </View>
                 ) : null}
 
-                <Button
-                  onPress={handleLogin}
-                  isLoading={isLoading}
-                  fullWidth
-                >
+                <Button onPress={handleLogin} isLoading={isLoading} fullWidth>
                   Se connecter
                 </Button>
               </Animated.View>
             </View>
           </ScrollView>
 
-          {/* Footer */}
           <Animated.View
             entering={FadeInDown.delay(400).springify()}
             style={styles.footer}

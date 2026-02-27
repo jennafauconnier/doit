@@ -1,98 +1,343 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend - DoIt API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST développée avec **NestJS** pour l'application mobile DoIt.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+> **Note** : Ceci est un premier projet de test pour me familiariser avec Nest.  
+> J'ai suivi les guidelines de la documentation officielle de NestJS et Firebase, avec l'aide de l'IA pour structurer l'architecture et implémenter les fonctionnalités.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+# 🎯 Ce qui a été implémenté
 
-## Project setup
+## 🏗️ Architecture NestJS
 
-```bash
-$ npm install
+- **Structure modulaire** : séparation en modules (Auth, Tasks, Firebase)
+- **Validation automatique** avec `class-validator` et `class-transformer`
+- **Guards personnalisés** pour l'authentification Firebase
+- **CORS activé** pour permettre les requêtes depuis l'app mobile
+- **Configuration centralisée** avec `@nestjs/config`
+
+---
+
+## 🔐 Module d'authentification (`auth`)
+
+- **Inscription**
+  - Création d'utilisateur dans Firebase Auth
+  - Stockage des données dans Firestore
+
+- **Connexion**
+  - Authentification via Firebase REST API
+
+- **Vérification de token**
+  - Validation des tokens JWT Firebase
+
+- **Récupération du profil**
+  - Endpoint `/auth/me` protégé
+
+- **Enregistrement du push token**
+  - Stockage du token Expo pour les notifications
+
+---
+
+## ✅ Module de tâches (`tasks`)
+
+### CRUD complet
+
+- Création de tâches
+- Liste des tâches (filtrées par utilisateur)
+- Détail d'une tâche
+- Mise à jour (titre, description, statut)
+- Suppression
+
+### Validation par photo
+
+- Upload de photo via `multipart/form-data`
+- Stockage en base64 dans Firestore
+- Marquage automatique comme complétée
+- Envoi de notification push de confirmation
+
+---
+
+## 🔔 Système de rappels automatiques
+
+### Service de rappels (`TasksReminderService`)
+
+- Cron job exécuté toutes les 30 minutes
+- Analyse des tâches non complétées
+- Système de phases progressives :
+  - **Early** (2h après création) → messages encourageants
+  - **Medium** (6h après création) → messages motivants
+  - **Urgent** (12h après création) → messages pressants
+  - **Critical** (24h après création) → messages très insistants
+
+- Tracking des rappels envoyés (compteur + timestamp)
+- Messages motivationnels variés pour chaque phase
+
+---
+
+## 🔥 Service Firebase
+
+- **Firebase Admin SDK** intégré
+
+### Firestore
+
+- Base de données NoSQL
+- Collection `users` → profils utilisateurs + push tokens
+- Collection `tasks` → tâches avec métadonnées
+
+### Firebase Auth
+
+- Gestion de l'authentification
+
+### Firebase Storage
+
+- Préparé pour le stockage de fichiers
+
+### Notifications push
+
+- Envoi via API Expo
+
+---
+
+## 🔒 Sécurité
+
+- **FirebaseAuthGuard** : protection des routes avec vérification du token JWT
+- **Validation des DTOs** : validation automatique des données entrantes
+- **Isolation des données** : chaque utilisateur accède uniquement à ses propres tâches
+
+---
+
+# 🏗️ Structure du projet
+
+```
+backend/
+├── src/
+│   ├── auth/                         # Module d'authentification
+│   │   ├── dto/                      # Data Transfer Objects
+│   │   │   ├── login.dto.ts
+│   │   │   ├── signup.dto.ts
+│   │   │   └── push-token.dto.ts
+│   │   ├── guards/
+│   │   │   └── firebase-auth.guard.ts
+│   │   ├── auth.controller.ts
+│   │   ├── auth.service.ts
+│   │   └── auth.module.ts
+│   ├── tasks/                        # Module de gestion des tâches
+│   │   ├── dto/
+│   │   │   ├── create-task.dto.ts
+│   │   │   └── update-task.dto.ts
+│   │   ├── tasks.controller.ts
+│   │   ├── tasks.service.ts
+│   │   ├── tasks-reminder.service.ts
+│   │   ├── tasks-reminder-messages.ts
+│   │   └── tasks.module.ts
+│   ├── firebase/                     # Module Firebase
+│   │   ├── firebase.service.ts
+│   │   └── firebase.module.ts
+│   ├── users/                        # Module utilisateurs (vide pour l'instant)
+│   ├── app.module.ts                 # Module racine
+│   └── main.ts                       # Point d'entrée
+├── test-notifications.ts             # Script de test des notifications
+├── test-notifications.sh             # Wrapper bash
+└── firebase-service-account.json     # Clés Firebase Admin (à ne pas commit)
 ```
 
-## Compile and run the project
+---
+
+# 🔧 Technologies utilisées
+
+- **NestJS v11**
+- **Firebase Admin SDK**
+- **Firestore**
+- **TypeScript**
+- **class-validator**
+- **@nestjs/schedule** (cron jobs)
+- **Multer** (upload de fichiers)
+
+---
+
+# 🚀 Démarrage
+
+## ✅ Prérequis
+
+- Node.js 18+
+- Compte Firebase configuré
+- Fichier `firebase-service-account.json`
+
+---
+
+## 📦 Installation
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+---
+
+## ⚙️ Configuration
+
+Créer un fichier `.env` à la racine :
+
+```
+PORT=3000
+FIREBASE_API_KEY=your_firebase_api_key
+FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+```
+
+---
+
+## ▶️ Lancement
 
 ```bash
-# unit tests
-$ npm run test
+# Mode développement (hot-reload)
+npm run start:dev
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# Mode production
+npm run build
+npm run start:prod
 ```
 
-## Deployment
+Le serveur démarre sur :
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```
+http://localhost:3000
+```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
+
+# 📡 API Endpoints
+
+## 🔐 Authentification (`/auth`)
+
+- `POST /auth/signup` → Inscription
+- `POST /auth/login` → Connexion
+- `GET /auth/me` → Profil utilisateur (protégé)
+- `POST /auth/push-token` → Enregistrer le token (protégé)
+
+---
+
+## ✅ Tâches (`/tasks`) — Toutes protégées
+
+- `POST /tasks` → Créer une tâche
+- `GET /tasks` → Liste des tâches
+- `GET /tasks/:id` → Détail
+- `PATCH /tasks/:id` → Mise à jour
+- `DELETE /tasks/:id` → Suppression
+- `POST /tasks/:id/validate` → Validation avec photo
+
+---
+
+# 🔔 Système de notifications
+
+## Rappels automatiques
+
+- Cron job → toutes les 30 minutes
+- Logique progressive selon l'ancienneté
+- Tracking des rappels
+- Rotation aléatoire des messages
+
+---
+
+## 🧪 Script de test
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run test:notifications
+# ou
+./test-notifications.sh
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Le script :
 
-## Resources
+- Demande l'email utilisateur
+- Récupère le push token depuis Firestore
+- Crée une tâche de test
+- Envoie 10 notifications (1/minute)
+- Permet de valider le système end-to-end
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# ⚠️ Limitations connues
 
-## Support
+## 🔔 Notifications push
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Pas de licence Apple Developer
+- Fonctionnent :
+  - Simulateur iOS (locales uniquement)
+  - Android (émulateur + physique)
+  - Expo Go (limité)
 
-## Stay in touch
+Pour des push iOS complets → licence Apple Developer requise.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## 📸 Stockage des photos
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Actuellement en base64 dans Firestore
+- Non optimal pour la production
+- À migrer vers Firebase Storage
+- Limite Firestore : 1MB par document
+
+---
+
+# 📚 Apprentissages et ressources
+
+Projet construit avec :
+
+- Documentation officielle NestJS
+- Firebase Admin SDK Documentation
+- Expo Push Notifications
+- Aide de l'IA pour la structure
+
+---
+
+# 🔮 Améliorations futures
+
+## 🏗️ Architecture
+
+- Tests unitaires + e2e
+- Logs structurés
+- Documentation Swagger/OpenAPI
+- Migration vers Firebase Storage
+
+## 🚀 Fonctionnalités
+
+- Partage de tâches
+- Catégories / tags
+- Statistiques avancées
+- Rappels personnalisables
+
+## ⚡ Performance
+
+- Cache Redis
+- Optimisation Firestore
+- Pagination
+
+## 🚢 Déploiement
+
+- Docker
+- CI/CD GitHub Actions
+- Déploiement cloud (Railway, Render, AWS)
+
+---
+
+# 🧪 Tests
+
+```bash
+# Tests unitaires
+npm run test
+
+# Tests e2e
+npm run test:e2e
+
+# Coverage
+npm run test:cov
+```
+
+---
+
+# 📝 Notes de développement
+
+- Le module `users` est préparé pour extension future
+- `app.controller.ts` et `app.service.ts` sont les fichiers par défaut NestJS
+- Les DTOs utilisent les décorateurs de validation
+- Le guard Firebase vérifie automatiquement les tokens sur les routes protégées

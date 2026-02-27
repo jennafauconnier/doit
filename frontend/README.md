@@ -1,50 +1,196 @@
-# Welcome to your Expo app 👋
+# Frontend - DoIt App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Application mobile de gestion de tâches développée avec **React Native** et **Expo**.
 
-## Get started
+---
 
-1. Install dependencies
+## 🎯 Fonctionnalités implémentées
 
-   ```bash
-   npm install
-   ```
+### 🔐 Authentification
 
-2. Start the app
+- Inscription et connexion utilisateur
+- Gestion sécurisée des tokens (Secure Storage)
+- Protection des routes avec `AuthGate`
+- Redirection automatique selon l'état d'authentification
 
-   ```bash
-   npx expo start
-   ```
+### ✅ Gestion des tâches
 
-In the output, you'll find options to open the app in a
+- Liste des tâches avec filtres (toutes, en attente, complétées)
+- Création de nouvelles tâches via modal
+- Marquage des tâches comme complétées
+- Statistiques en temps réel (tâches en attente / complétées)
+- Détail de tâche avec possibilité d'ajout de photo de validation
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 📸 Validation par photo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Écran dédié pour valider une tâche avec photo
+- Sélection depuis la galerie ou prise de photo
+- Prévisualisation avant envoi
+- Upload de la photo au backend
 
-## Get a fresh project
+### 👤 Profil utilisateur
 
-When you're ready, run:
+- Affichage des informations utilisateur
+- Menu de paramètres
+- Déconnexion
+- Bouton de test de notifications locales (fonctionnel)
 
-```bash
-npm run reset-project
+### 🔔 Notifications
+
+- Service de notifications configuré
+- Notifications locales de test fonctionnelles
+- Listeners pour gérer les notifications reçues et tapées
+
+---
+
+# 🏗️ Architecture
+
+## 📂 Structure des dossiers
+
+```
+frontend/
+├── app/                         # Routes Expo Router
+│   ├── (auth)/                  # Groupe d'authentification
+│   ├── (tabs)/                  # Navigation par onglets
+│   ├── tasks/                   # Détails des tâches
+│   └── validate/                # Validation par photo
+├── components/                  # Composants réutilisables
+│   ├── ui/                      # Composants UI de base
+│   ├── tasks/                   # Composants liés aux tâches
+│   └── profile/                 # Composants du profil
+├── services/                    # Services API et utilitaires
+│   ├── api/                     # Clients API (auth, tasks)
+│   ├── storage/                 # Stockage sécurisé
+│   └── notifications/           # Service de notifications
+├── stores/                      # État global (Zustand)
+│   ├── auth.store.ts            # État d'authentification
+│   └── tasks.store.ts           # État des tâches
+└── styles/                      # Design tokens et styles communs
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🛠️ Technologies utilisées
 
-To learn more about developing your project with Expo, look at the following resources:
+- **React Native** avec **Expo**
+- **Expo Router** pour la navigation
+- **Zustand** pour la gestion d'état
+- **React Native Paper** pour les composants UI
+- **Axios** pour les appels API
+- **Expo Secure Store** pour le stockage sécurisé
+- **Expo Notifications** pour les notifications
+- **Expo Image Picker** pour la sélection / prise de photos
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+# 🚧 Améliorations souhaitées
 
-Join our community of developers creating universal apps.
+## 1. Refactoring et organisation du code
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Décomposer davantage les composants pour une meilleure maintenabilité
+- Extraire la logique métier des composants vers des hooks personnalisés
+- Séparer les styles inline en fichiers `.styles.ts` dédiés
+- Créer des composants plus atomiques et réutilisables
+- Améliorer la séparation des responsabilités
+
+---
+
+## 2. Notifications (limitation actuelle)
+
+⚠️ **Pas de licence Apple Developer** : impossible de tester les notifications push réelles sur iOS
+
+✅ **Bouton de test fonctionnel** : notifications locales testables via le bouton dans l'écran de profil
+
+Les notifications push nécessitent un compte Apple Developer payant pour générer les certificats.
+
+---
+
+## 3. Build et déploiement
+
+### 📱 Build sur téléphone physique
+
+Nécessite une licence Apple Developer pour :
+
+- Signer l'application iOS
+- Accéder à la caméra native (limitation du simulateur)
+- Tester les notifications push réelles
+- Déployer sur TestFlight
+
+---
+
+# 🚀 Démarrage
+
+```bash
+# Installer les dépendances
+npm install
+
+# Lancer le serveur de développement
+npx expo start
+```
+
+### Options de lancement
+
+- Appuyer sur `i` pour iOS Simulator
+- Appuyer sur `a` pour Android Emulator
+- Scanner le QR code avec Expo Go sur un appareil physique
+
+---
+
+# 📝 Variables d'environnement
+
+Créer un fichier `.env` à la racine du dossier `frontend` :
+
+```
+EXPO_PUBLIC_API_URL=http://localhost:3000
+```
+
+---
+
+# 🔧 Configuration
+
+## iOS (nécessite macOS)
+
+- Xcode installé
+- Simulateur iOS configuré
+- ⚠️ Licence Apple Developer requise pour build sur appareil physique
+
+## Android
+
+- Android Studio installé
+- Émulateur Android configuré
+- Build sur appareil physique possible sans licence payante
+
+---
+
+# 📱 Fonctionnalités limitées en développement
+
+## Simulateur iOS
+
+- ❌ Caméra native non disponible (sélection galerie uniquement)
+- ❌ Notifications push non testables sans certificats
+- ✅ Notifications locales fonctionnelles
+
+## Appareil physique (avec Expo Go)
+
+- ✅ Caméra accessible
+- ❌ Notifications push limitées
+- ✅ Notifications locales fonctionnelles
+
+## Build standalone (nécessite licence Apple)
+
+- ✅ Toutes les fonctionnalités natives
+- ✅ Notifications push complètes
+- ✅ Caméra native
+- ✅ Distribution TestFlight / App Store
+
+---
+
+# 📚 Prochaines étapes
+
+- Refactoring du code pour améliorer la structure
+- Obtenir une licence Apple Developer (99$/an) pour :
+  - Tester sur appareil iOS physique
+  - Configurer les notifications push
+  - Distribuer l'application
+- Optimiser les performances et l'expérience utilisateur
+- Ajouter des tests unitaires et d'intégration
